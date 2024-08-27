@@ -28,7 +28,10 @@ const hashPassword = async (password: string): Promise<string> => {
 };
 
 const generateToken = (userId: string): string => {
-  return sign({ sub: userId }, config.jwtSecret as string, { expiresIn: "7d" });
+  return sign({ sub: userId }, config.jwtSecret as string, {
+    expiresIn: "7d",
+    algorithm: "HS256",
+  });
 };
 
 const createUser = async (
