@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 import globalErrorHandler from "./middleware/globalErrorHandler";
-import userRouter from "./userRouter";
+import userRouter from "./user/userRouter";
 
 const app = express();
 
