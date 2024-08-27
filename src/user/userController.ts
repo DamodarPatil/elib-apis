@@ -3,6 +3,7 @@
 import { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
 import { User } from "./userModel";
+import bcrypt from "bcrypt";
 
 const createUser = async (
   request: Request,
@@ -25,8 +26,8 @@ const createUser = async (
     return next(error);
   }
 
-  // password -> hash 
-
+  // password -> hashing
+  const hashedPassword = await bcrypt.hash(password, 10);
   // Process
 
   //Response
