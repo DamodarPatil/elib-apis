@@ -1,0 +1,17 @@
+{
+  "name": "elib-apis",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev":"nodemon server.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^22.5.0",
+    "nodemon": "^3.1.4",
+    "ts-node": "^10.9.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5.5.4"
+  }
+}
