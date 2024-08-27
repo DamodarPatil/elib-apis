@@ -1,12 +1,8 @@
-import express, { Request, Response } from "express";
+import express from "express";
+import { createUser } from "./userController";
 
 const userRouter = express.Router();
 
-
-userRouter.post('/register',(request:Request, response:Response)=>{
-    response.json({
-        message: "User registered"
-    })
-})
+userRouter.post("/register", createUser);
 
 export default userRouter;
