@@ -4,14 +4,15 @@ import { config } from "../config/config";
 
 const globalErrorHandler = (
   error: HttpError,
-  request: Request,
-  response: Response,
+  req: Request,
+  res: Response,
   next: NextFunction
 ) => {
   const statusCode = error.statusCode || 500;
-  return response.status(statusCode).json({
-    message: error.message || "Internal Server Error",
-    errorStack: config.env === "development" ? error.stack : "", // don't use in production
+
+  return res.status(statusCode).json({
+    message: error.message || "Internal Server Error", // Error message to the client
+    errorStack: config.env === "development" ? error.stack : undefined, // Stack trace only in development mode
   });
 };
 

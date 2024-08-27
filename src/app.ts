@@ -7,16 +7,14 @@ const app = express();
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-app.get("/", (request: Request, response: Response, next: NextFunction) => {
-  response.json({
+app.get("/", (req: Request, res: Response, next: NextFunction) => {
+  res.json({
     message: "Welcome",
   });
 });
 
-// Routes
 app.use("/api/users", userRouter);
 
-// Global error handler
 app.use(globalErrorHandler);
 
 export default app;

@@ -17,8 +17,12 @@ const userSchema = new mongoose.Schema<UserType>(
       required: true,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true, // Automatically manage `createdAt` and `updatedAt` fields
+  }
 );
 
 export const User = mongoose.model<UserType>("User", userSchema);
-// mongoose.model("User", userSchema, "authors");  if you want to overwrite the collection name you can use third parameter as overwritten name
+
+// Note: You can specify a custom collection name by passing a third argument to the model function, e.g.:
+// export const User = model<UserType>("User", userSchema, "authors");
