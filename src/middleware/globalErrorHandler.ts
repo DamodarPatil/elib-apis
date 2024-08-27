@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import { HttpError } from "http-errors";
 import { config } from "../config/config";
 
-// Global error handler
 const globalErrorHandler = (
   error: HttpError,
   request: Request,
