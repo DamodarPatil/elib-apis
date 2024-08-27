@@ -1,10 +1,7 @@
 {
   "name": "elib-apis",
-  "module": "index.ts",
+  "module": "server.js",
   "type": "module",
-  "scripts": {
-    "dev":"nodemon server.ts"
-  },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/node": "^22.5.0",
