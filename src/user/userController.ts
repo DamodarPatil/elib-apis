@@ -34,7 +34,7 @@ const generateToken = (userId: string): string => {
   });
 };
 
-const createUser = async (
+const registerUser = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -56,7 +56,7 @@ const createUser = async (
 
     const token = generateToken(newUser._id);
 
-    res.json({
+    res.status(201).json({
       message: "User created successfully",
       id: newUser._id,
       accessToken: token,
@@ -66,4 +66,5 @@ const createUser = async (
   }
 };
 
-export { createUser };
+
+export { registerUser, loginUser };
