@@ -66,5 +66,40 @@ const registerUser = async (
   }
 };
 
+const loginUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      throw createHttpError(400, "Email and password are required");
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      throw createHttpError(404, "User not found");
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      throw createHttpError(400, "Username or password incorrect!");
+    }
+
+    const token = generateToken(user._id);
+
+    res.status(201).json({
+      message: "Login successful",
+      id: user._id,
+      accessToken: token,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export { registerUser, loginUser };
