@@ -9,6 +9,7 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { title, genre } = req.body;
 
+    // Word press let
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
     const coverImageMimeType = files.coverImage[0].mimetype.split("/").at(-1);
     const fileName = files.coverImage[0].filename;
@@ -43,6 +44,9 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
 
     console.log("bookFileUploadResult", bookFileUploadResult);
     console.log("uploadResult", uploadResult);
+    // @ts-ignore
+    console.log('userId',req.userId);
+    
 
     const newBook = await Book.create({
       title,
