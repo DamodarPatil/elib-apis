@@ -225,11 +225,51 @@ const getSingleBook = async (
     return res.json(book);
   } catch (error) {
     // Log the error to the console
-    console.log(error);
+    console.log("Error while getting the book", error);
 
     // Return a 500 error if something goes wrong during the process
     return next(createHttpError(500, "Error while getting a book"));
   }
 };
 
-export { createBook, updateBook, listBooks, getSingleBook };
+const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const bookId = req.params.bookId;
+
+    const book = await Book.findOne({ _id: bookId });
+
+    if (!book) {
+      return next(createHttpError(404, "Book not found"));
+    }
+
+    // Check Access
+    if (book.author.toString() !== (req as AuthRequest).userId) {
+      return next(createHttpError(403, "You cannot update others' books."));
+    }
+
+    const coverFileSplits = book.coverImage.split("/");
+    const coverImagePublicId =
+      coverFileSplits.at(-2) + "/" + coverFileSplits.at(-1)?.split(".").at(-2);
+    console.log(coverFileSplits);
+    console.log(coverImagePublicId);
+
+    const bookFileSplits = book.file.split("/");
+    const bookFilePublicId =
+      bookFileSplits.at(-2) + "/" + bookFileSplits.at(-1);
+    console.log(bookFileSplits);
+    console.log(bookFilePublicId);
+
+    await cloudinary.uploader.destroy(coverImagePublicId);
+    await cloudinary.uploader.destroy(bookFilePublicId, {
+      resource_type: "raw",
+    });
+
+    await Book.deleteOne({ _id: bookId });
+    return res.sendStatus(204);
+  } catch (error) {
+    console.log("Error while getting the book", error);
+    return next(createHttpError(500, "Error while getting a book"));
+  }
+};
+
+export { createBook, updateBook, listBooks, getSingleBook, deleteBook };
