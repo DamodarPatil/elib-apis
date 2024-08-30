@@ -89,7 +89,7 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
     await deleteLocalFile(bookFilePath);
 
     // Respond with the created book details
-    res.status(201).json({
+    return res.status(201).json({
       id: newBook._id,
       message: "Book created successfully.",
     });
@@ -100,7 +100,9 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
     } else {
       // Catch any other unexpected errors and log them
       console.error("Error in createBook function:", error);
-      next(createHttpError(500, "Error while processing the book creation."));
+      return next(
+        createHttpError(500, "Error while processing the book creation.")
+      );
     }
   }
 };
@@ -175,13 +177,15 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
     );
 
     // Send the updated book details in the response
-    res.json(updatedBook);
+    return res.json(updatedBook);
   } catch (error) {
     if (error instanceof createHttpError.HttpError) {
       next(error);
     } else {
       console.error("Error in updateBook function:", error);
-      next(createHttpError(500, "Error while processing the book update."));
+      return next(
+        createHttpError(500, "Error while processing the book update.")
+      );
     }
   }
 };
@@ -193,11 +197,39 @@ const listBooks = async (req: Request, res: Response, next: NextFunction) => {
     const books = await Book.find(); // Note: In production, use pagination
 
     // Send the list of books in the response
-    res.json(books);
+    return res.json(books);
   } catch (error) {
     console.error("Error while getting the book list:", error);
-    next(createHttpError(500, "Error while getting the book list."));
+    return next(createHttpError(500, "Error while getting the book list."));
   }
 };
 
-export { createBook, updateBook, listBooks };
+const getSingleBook = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // Extract the bookId from the request parameters
+    const bookId = req.params.bookId;
+
+    // Attempt to find a book with the given ID in the database
+    const book = await Book.findOne({ _id: bookId });
+
+    // If no book is found, return a 404 error
+    if (!book) {
+      return next(createHttpError(404, "Book not found"));
+    }
+
+    // If the book is found, return it in the response
+    return res.json(book);
+  } catch (error) {
+    // Log the error to the console
+    console.log(error);
+
+    // Return a 500 error if something goes wrong during the process
+    return next(createHttpError(500, "Error while getting a book"));
+  }
+};
+
+export { createBook, updateBook, listBooks, getSingleBook };

@@ -15,7 +15,8 @@ const authenticate = (req: Request, res: Response, next: NextFunction) => {
 
     // Check if the token is provided and starts with "Bearer"
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      throw createHttpError(401, "Authorization token is required");
+      // Return the error to stop further processing
+      return next(createHttpError(401, "Authorization token is required"));
     }
 
     // Extract the token from the header
@@ -26,21 +27,22 @@ const authenticate = (req: Request, res: Response, next: NextFunction) => {
 
     // Check if the decoded token contains a subject (sub)
     if (!decoded || typeof decoded.sub !== "string") {
-      throw createHttpError(403, "Invalid token payload");
+      // Return the error to stop further processing
+      return next(createHttpError(403, "Invalid token payload"));
     }
 
     // Attach the userId to the request object
     (req as AuthRequest).userId = decoded.sub;
 
     // Proceed to the next middleware
-    next();
+    return next();
   } catch (error) {
     // Handle errors, such as invalid token or missing token
     if (error instanceof createHttpError.HttpError) {
-      next(error);
+      return next(error); // Return the specific HttpError
     } else {
       // Catch any other unexpected errors
-      next(createHttpError(403, "Invalid or expired token"));
+      return next(createHttpError(403, "Invalid or expired token")); // Return the generic error
     }
   }
 };
