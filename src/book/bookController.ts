@@ -105,7 +105,88 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { createBook };
+const updateBook = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { title, genre } = req.body;
+    const bookId = req.params.bookId;
+
+    const book = await Book.findOne({ _id: bookId });
+
+    if (!book) {
+      return next(createHttpError(404, "Book not found"));
+    }
+
+    if (book.author.toString() !== (req as AuthRequest).userId) {
+      return next(createHttpError(403, "You cannot update others' books."));
+    }
+
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
+    // Update cover image if new file provided
+    let coverImageUrl = book.coverImage;
+    if (files.coverImage) {
+      const coverImage = files.coverImage[0];
+      const coverImagePath = path.resolve(
+        __dirname,
+        "../../public/data/uploads",
+        coverImage.filename
+      );
+
+      coverImageUrl = await uploadFileToCloudinary(coverImagePath, {
+        filename_override: coverImage.filename,
+        folder: "book-covers",
+        format: coverImage.mimetype.split("/").pop() || "jpg",
+        resource_type: "image",
+      });
+
+      await deleteLocalFile(coverImagePath);
+    }
+
+    // Update book file if new file provided
+    let bookFileUrl = book.file;
+    if (files.file) {
+      const bookFile = files.file[0];
+      const bookFilePath = path.resolve(
+        __dirname,
+        "../../public/data/uploads",
+        bookFile.filename
+      );
+
+      bookFileUrl = await uploadFileToCloudinary(bookFilePath, {
+        filename_override: bookFile.filename,
+        folder: "book-PDFs",
+        format: "pdf",
+        resource_type: "raw",
+      });
+
+      await deleteLocalFile(bookFilePath);
+    }
+
+    // Update book details in the database
+    const updatedBook = await Book.findOneAndUpdate(
+      { _id: bookId },
+      {
+        title,
+        genre,
+        coverImage: coverImageUrl,
+        file: bookFileUrl,
+      },
+      { new: true }
+    );
+
+    // Send the updated book details in the response
+    res.json(updatedBook);
+  } catch (error) {
+    if (error instanceof createHttpError.HttpError) {
+      next(error);
+    } else {
+      console.error("Error in updateBook function:", error);
+      next(createHttpError(500, "Error while processing the book update."));
+    }
+  }
+};
+
+export { createBook, updateBook };
 
 // import path from "node:path";
 // import fs from "node:fs";
