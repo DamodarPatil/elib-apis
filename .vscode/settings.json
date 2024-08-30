@@ -1,0 +1,8 @@
+{
+    "terminal.integrated.fontFamily": "fira code, monospace",
+    "editor.fontFamily": "fira code, Consolas, 'Courier New', monospace",
+    "errorLens.fontFamily": "Gilroy ☞",
+    "scm.inputFontFamily": "default",
+    "editor.inlayHints.fontFamily": "",
+    "notebook.output.fontFamily": ""
+}
