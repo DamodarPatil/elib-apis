@@ -6,9 +6,6 @@
   <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License">
 </p>
 
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/your-image-url" alt="Book Management API" width="600">
-</p>
 
 ---
 
